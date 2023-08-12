@@ -1,11 +1,7 @@
 #ifndef TYPE_H
 #define TYPE_H
 
-#include <iostream>
-#include <list>
-#include <string>
-
-using namespace std;
+#include <stdint.h>
 
 #define countof(x) (sizeof(x) / sizeof(x[0]))
 
