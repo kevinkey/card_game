@@ -3,17 +3,19 @@
 
 #include "type.h"
 #include "card.h"
-#include "suit.h"
-
-#define DECK_NUM_SUITS 4u
-#define DECK_NUM_CARDS 13u
+#include "cardset.h"
 
 typedef struct
 {
-    suit_t suit[DECK_NUM_SUITS];
-    card_t card[DECK_NUM_SUITS][DECK_NUM_CARDS];
+    card_t card[52];
+    cardset_t set;
+    card_t * selected;
+    GLfloat offset[2];
 } deck_t;
 
 void deck_init(deck_t * deck);
+void deck_select_card(deck_t * deck, GLfloat x, GLfloat y);
+void deck_move_card(deck_t * deck, GLfloat x, GLfloat y);
+void deck_draw(deck_t * deck);
 
 #endif

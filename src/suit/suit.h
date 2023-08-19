@@ -6,10 +6,8 @@
 typedef struct
 {
     char const * name;
+    GLfloat color[3];
 } suit_t;
-
-
-void suit_init(suit_t * suit, char const * name);
 
 void suit_draw(suit_t * suit);
 

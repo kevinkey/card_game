@@ -1,17 +1,85 @@
 #include "deck.h"
+#include <string.h>
+#include <stdio.h>
 
-static char const * suits[] = {"Hearts", "Diamonds", "Clubs", "Spades"};
-static char const cards[] = {'2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'A'};
+static suit_t const Suits[] =
+{
+    {
+        .name = "Hearts",
+        .color = (GLfloat[]){1.0f, 0.0f, 0.0f},
+    },
+    {
+        .name = "Diamonds",
+        .color = (GLfloat[]){1.0f, 0.0f, 0.0f},
+    },
+    {
+        .name = "Clubs",
+        .color = (GLfloat[]){0.0f, 0.0f, 0.0f},
+    },
+    {
+        .name = "Spades",
+        .color = (GLfloat[]){0.0f, 0.0f, 0.0f},
+    },
+};
+
+static char const Cards[] =
+{
+    '2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'A'
+};
 
 void deck_init(deck_t * deck)
 {
-    for (uint8_t j = 0u; j < countof(suits); j++)
-    {
-        suit_init(&deck->suit[j], suits[j]);
+    int index = 0;
 
-        for (uint8_t i = 0u; i < countof(cards); i++)
+    for (int j = 0; j < countof(Suits); j++)
+    {
+        for (int i = 0; i < countof(Cards); i++)
         {
-            card_init(&deck->card[j][i], &deck->suit[j], cards[i]);
+            card_init(&deck->card[index], &Suits[j], Cards[i]);
+            cardset_push(&deck->set, &deck->card[index]);
+            index++;
         }
+    }
+
+    cardset_shuffle(&deck->set);
+
+    deck->selected = NULL;
+}
+
+void deck_select_card(deck_t * deck, GLfloat x, GLfloat y)
+{
+    for (int i = deck->set.count - 1; i >= 0; i--)
+    {
+        card_t * card = deck->set.set[i];
+
+        if (card_within_bounds(card, x, y))
+        {
+            deck->selected = card;
+            deck->offset[0] = x - card->pos[0];
+            deck->offset[1] = y - card->pos[1];
+
+            cardset_push(&deck->set, cardset_remove(&deck->set, i));
+            glutPostRedisplay();
+            break;
+        }
+    }
+}
+
+void deck_move_card(deck_t * deck, GLfloat x, GLfloat y)
+{
+    if (deck->selected != NULL)
+    {
+        deck->selected->pos[0] = x - deck->offset[0];
+        deck->selected->pos[1] = y - deck->offset[1];
+
+        glutPostRedisplay();
+    }
+}
+
+void deck_draw(deck_t * deck)
+{
+    for (int i = 0; i < deck->set.count; i++)
+    {
+        card_draw(deck->set.set[i]);
     }
 }

@@ -15,9 +15,23 @@ stdout, stderr, status = Open3.capture3("pkg-config --libs glew")
 env[:LDFLAGS] += stdout.split(" ")
 env[:LDFLAGS] << "-lglut"
 
-env[:CPPPATH] = ["src/", "src/card", "src/deck", "src/suit"]
+env[:CPPPATH] = [
+    "src/",
+    "src/card",
+    "src/cardset",
+    "src/deck",
+    "src/solitaire",
+    "src/suit"
+]
 
-env[:SRC] = ["src/main.c", "src/card/card.c", "src/deck/deck.c", "src/suit/suit.c"]
+env[:SRC] = [
+    "src/main.c",
+    "src/card/card.c",
+    "src/cardset/cardset.c",
+    "src/deck/deck.c",
+    "src/solitaire/solitaire.c",
+    "src/suit/suit.c"
+]
 
 FileUtils.rm_rf(env[:BUILD_DIR])
 
