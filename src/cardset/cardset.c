@@ -22,6 +22,8 @@ void cardset_init(cardset_t * cardset)
 
 void cardset_push(cardset_t * cardset, card_t * card)
 {
+    if (card == NULL) return;
+
     if (cardset->count == 0)
     {
         cardset->set = malloc(sizeof(card));
@@ -88,7 +90,20 @@ void cardset_draw(cardset_t * cardset)
 {
     GLfloat pos[2] = {cardset->pos[0], cardset->pos[1]};
 
-    if (cardset->count == 0)
+    if (cardset->count != 0)
+    {
+        for (int i = 0; i < cardset->count; i++)
+        {
+            printf(" %c%c", cardset->set[i]->name, cardset->set[i]->suit->name[0]);
+            cardset->set[i]->pos[0] = pos[0];
+            cardset->set[i]->pos[1] = pos[1];
+            card_draw(cardset->set[i]);
+
+            pos[0] += cardset->offset[0];
+            pos[1] += cardset->offset[1];
+        }
+    }
+    else if (!cardset->hide_empty)
     {
         GLfloat tl[2] = {pos[0], pos[1]};
         GLfloat br[2] = {pos[0] + Card_Size[0], pos[1] - Card_Size[1]};
@@ -116,16 +131,32 @@ void cardset_draw(cardset_t * cardset)
         }
         glEnd();
     }
-    else
-    {
-        for (int i = 0; i < cardset->count; i++)
-        {
-            cardset->set[i]->pos[0] = pos[0];
-            cardset->set[i]->pos[1] = pos[1];
-            card_draw(cardset->set[i]);
+}
 
-            pos[0] += cardset->offset[0];
-            pos[1] += cardset->offset[1];
+bool cardset_within_bounds(cardset_t * cardset, GLfloat x, GLfloat y, int * index)
+{
+    if (cardset->count != 0)
+    {
+        for (int i = cardset->count - 1; i >= 0; i--)
+        {
+            if (card_within_bounds(cardset->set[i], x, y))
+            {
+                *index = i;
+                return true;
+            }
         }
+
+        return false;
+    }
+    else if (!cardset->hide_empty)
+    {
+        if (x < cardset->pos[0]) return false;
+        if (x > (cardset->pos[0] + Card_Size[0])) return false;
+        if (y > cardset->pos[1]) return false;
+        if (y < (cardset->pos[1] - Card_Size[1])) return false;
+
+        *index = 0;
+
+        return true;
     }
 }

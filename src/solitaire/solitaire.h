@@ -20,6 +20,7 @@ typedef enum
     SOLITAIRE_SET_COL_4,
     SOLITAIRE_SET_COL_5,
     SOLITAIRE_SET_COL_6,
+    SOLITAIRE_SET_SELECTED,
     SOLITAIRE_SET_NUM,
 } solitaire_set_t;
 
@@ -27,9 +28,11 @@ typedef struct
 {
     deck_t deck;
     cardset_t set[SOLITAIRE_SET_NUM];
+    solitaire_set_t previous_set;
 } solitaire_t;
 
 void solitaire_init(solitaire_t * solitaire);
 void solitaire_draw(solitaire_t * solitaire);
+void solitaire_select(solitaire_t * solitaire, GLfloat x, GLfloat y, bool active);
 
 #endif
