@@ -88,13 +88,44 @@ void cardset_draw(cardset_t * cardset)
 {
     GLfloat pos[2] = {cardset->pos[0], cardset->pos[1]};
 
-    for (int i = 0; i < cardset->count; i++)
+    if (cardset->count == 0)
     {
-        cardset->set[i]->pos[0] = pos[0];
-        cardset->set[i]->pos[1] = pos[1];
-        card_draw(cardset->set[i]);
+        GLfloat tl[2] = {pos[0], pos[1]};
+        GLfloat br[2] = {pos[0] + Card_Size[0], pos[1] - Card_Size[1]};
 
-        pos[0] += cardset->offset[0];
-        pos[1] += cardset->offset[1];
+        glBegin(GL_QUADS);
+        {
+            glColor3f(0.0f, 0.45f, 0.0f);
+            glVertex2f(tl[0], tl[1]);
+            glColor3f(0.0f, 0.4f, 0.0f);
+            glVertex2f(br[0], tl[1]);
+            glColor3f(0.0f, 0.4f, 0.0f);
+            glVertex2f(br[0], br[1]);
+            glColor3f(0.0f, 0.4f, 0.0f);
+            glVertex2f(tl[0], br[1]);
+        }
+        glEnd();
+
+        glColor3f(0.0f, 0.3f, 0.0f);
+        glBegin(GL_LINE_LOOP);
+        {
+            glVertex2f(tl[0], tl[1]);
+            glVertex2f(tl[0], br[1]);
+            glVertex2f(br[0], br[1]);
+            glVertex2f(br[0], tl[1]);
+        }
+        glEnd();
+    }
+    else
+    {
+        for (int i = 0; i < cardset->count; i++)
+        {
+            cardset->set[i]->pos[0] = pos[0];
+            cardset->set[i]->pos[1] = pos[1];
+            card_draw(cardset->set[i]);
+
+            pos[0] += cardset->offset[0];
+            pos[1] += cardset->offset[1];
+        }
     }
 }

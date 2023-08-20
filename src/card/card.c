@@ -26,17 +26,17 @@ void card_draw(card_t * card)
     GLfloat tl[2] = {card->pos[0], card->pos[1]};
     GLfloat br[2] = {card->pos[0] + Card_Size[0], card->pos[1] - Card_Size[1]};
 
-    GLfloat c1[3] = {0.0f, 0.0f, 0.5f};
-    GLfloat c2[3] = {0.2f, 0.2f, 0.7f};
+    GLfloat c1[3] = {0.0f, 0.1f, 0.5f};
+    GLfloat c2[3] = {0.2f, 0.3f, 0.7f};
 
     if (!card->facedown)
     {
         c1[0] = 1.0f;
         c1[1] = 1.0f;
         c1[2] = 1.0f;
-        c2[0] = 0.8f;
-        c2[1] = 0.8f;
-        c2[2] = 0.8f;
+        c2[0] = 0.7f;
+        c2[1] = 0.7f;
+        c2[2] = 0.7f;
     }
 
     glBegin(GL_QUADS);

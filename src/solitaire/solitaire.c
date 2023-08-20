@@ -36,7 +36,7 @@ void solitaire_init(solitaire_t * solitaire)
         cardset_push(col, card);
     }
 
-    Card_Size[0] = (2.0f - (8.0f * 0.01f)) / 7.0f;
+    Card_Size[0] = (2.0f - (8.0f * 0.02f)) / 7.0f;
     Card_Size[1] = Card_Size[0] * 1.8f;
 
     GLfloat x = -0.99f;
@@ -44,7 +44,7 @@ void solitaire_init(solitaire_t * solitaire)
     for (int i = SOLITAIRE_SET_COL_0; i <= SOLITAIRE_SET_COL_6; i++)
     {
         solitaire->set[i].pos[0] = x;
-        x += 0.01f + Card_Size[0];
+        x += 0.02f + Card_Size[0];
 
         solitaire->set[i].pos[1] = Card_Size[1] - 0.1f;
         solitaire->set[i].offset[1] = -0.1f;
