@@ -8,7 +8,9 @@ static void set_select(solitaire_t * solitaire, solitaire_set_t set, GLfloat x, 
     switch (set)
     {
         case SOLITAIRE_SET_DISCARD:
-
+            cardset_push(
+                &solitaire->set[SOLITAIRE_SET_SELECTED],
+                cardset_pop(&solitaire->set[set]));
             break;
         case SOLITAIRE_SET_HOME_0:
         case SOLITAIRE_SET_HOME_1:
@@ -30,38 +32,27 @@ static void set_select(solitaire_t * solitaire, solitaire_set_t set, GLfloat x, 
 
 static void set_release(solitaire_t * solitaire, solitaire_set_t set, GLfloat x, GLfloat y, int index)
 {
-    printf("RELEASE: %d %d\n", set, index);
+    card_t * card;
 
-    bool moved = false;
+    printf("RELEASE: %d %d\n", set, index);
 
     switch (set)
     {
         case SOLITAIRE_SET_DECK:
             if (solitaire->previous_set == SOLITAIRE_SET_DECK)
             {
-                card_t * card = cardset_pop(&solitaire->set[set]);
-
-                if (card != NULL)
+                if ((card = cardset_pop(&solitaire->set[SOLITAIRE_SET_DECK])) != NULL)
                 {
                     card->facedown = false;
                     cardset_push(&solitaire->set[SOLITAIRE_SET_DISCARD], card);
-                    moved = true;
                 }
-            }
-            break;
-        case SOLITAIRE_SET_DISCARD:
-            if ((solitaire->previous_set == SOLITAIRE_SET_DISCARD)
-                && (solitaire->set[SOLITAIRE_SET_DECK].count == 0))
-            {
-                printf("HELLO\n");
-                card_t * card;
-
-                while ((card = cardset_pop(&solitaire->set[set])) != NULL)
+                else
                 {
-                    moved = true;
-
-                    card->facedown = true;
-                    cardset_push(&solitaire->set[SOLITAIRE_SET_DECK], card);
+                    while ((card = cardset_pop(&solitaire->set[SOLITAIRE_SET_DISCARD])) != NULL)
+                    {
+                        card->facedown = true;
+                        cardset_push(&solitaire->set[SOLITAIRE_SET_DECK], card);
+                    }
                 }
             }
             break;
@@ -80,15 +71,6 @@ static void set_release(solitaire_t * solitaire, solitaire_set_t set, GLfloat x,
         case SOLITAIRE_SET_COL_6:
 
             break;
-    }
-
-    if (moved)
-    {
-        glutPostRedisplay();
-    }
-    else
-    {
-
     }
 }
 
@@ -187,7 +169,31 @@ void solitaire_select(solitaire_t * solitaire, GLfloat x, GLfloat y, bool active
             {
                 set_release(solitaire, i, x, y, index);
             }
+
+            glutPostRedisplay();
             break;
         }
+    }
+
+    if (!active)
+    {
+        while (solitaire->set[SOLITAIRE_SET_SELECTED].count != 0)
+        {
+            cardset_push(
+                &solitaire->set[solitaire->previous_set],
+                cardset_remove(&solitaire->set[SOLITAIRE_SET_SELECTED], 0));
+        }
+        glutPostRedisplay();
+    }
+}
+
+void solitaire_motion(solitaire_t * solitaire, GLfloat x, GLfloat y)
+{
+    if (solitaire->set[SOLITAIRE_SET_SELECTED].count != 0)
+    {
+        solitaire->set[SOLITAIRE_SET_SELECTED].pos[0] = x;
+        solitaire->set[SOLITAIRE_SET_SELECTED].pos[1] = y;
+
+        glutPostRedisplay();
     }
 }

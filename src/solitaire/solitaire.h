@@ -34,5 +34,6 @@ typedef struct
 void solitaire_init(solitaire_t * solitaire);
 void solitaire_draw(solitaire_t * solitaire);
 void solitaire_select(solitaire_t * solitaire, GLfloat x, GLfloat y, bool active);
+void solitaire_motion(solitaire_t * solitaire, GLfloat x, GLfloat y);
 
 #endif

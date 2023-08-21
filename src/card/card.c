@@ -3,7 +3,7 @@
 
 GLfloat Card_Size[2];
 
-void card_init(card_t * card, suit_t const * suit, char name)
+void card_init(card_t * card, suit_t * suit, card_name_t name)
 {
     card->suit = suit;
     card->name = name;
@@ -64,11 +64,26 @@ void card_draw(card_t * card)
 
     if (!card->facedown)
     {
-        glColor3f(card->suit->color[0], card->suit->color[1], card->suit->color[2]);
+        glColor3f(card->suit->rgb[0], card->suit->rgb[1], card->suit->rgb[2]);
         glRasterPos2f(tl[0], br[1]);
         //glScalef(0.003,0.003,1);
         //glutStrokeString(GLUT_STROKE_MONO_ROMAN, (char[]){card->name, card->suit->name[0]});
 
-        glutBitmapString(GLUT_BITMAP_TIMES_ROMAN_24, (char[]){card->name, card->suit->name[0]});
+        glutBitmapString(GLUT_BITMAP_TIMES_ROMAN_24, (char[]){card_text(card), suit_text(card->suit)});
     }
+}
+
+char card_text(card_t * card)
+{
+    static char const text[] =
+    {
+        '2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'A'
+    };
+
+    return text[card->name];
+}
+
+int card_diff(card_t * card_a, card_t * card_b)
+{
+    return card_a->name - card_b->name;
 }

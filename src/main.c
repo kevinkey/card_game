@@ -25,6 +25,8 @@ static void MotionFunc(int x, int y)
 {
     GLfloat fx = (2.0f * (GLfloat)x / (GLfloat)glutGet(GLUT_WINDOW_WIDTH)) - 1.0f;
     GLfloat fy = -(2.0f * (GLfloat) y / (GLfloat)glutGet(GLUT_WINDOW_HEIGHT) - 1.0f);
+
+    solitaire_motion(&solitaire, fx, fy);
 }
 
 int main(int argc, char ** argv)

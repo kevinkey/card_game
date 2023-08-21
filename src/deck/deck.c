@@ -2,29 +2,28 @@
 #include <string.h>
 #include <stdio.h>
 
-static suit_t const Suits[] =
+static suit_t Suits[] =
 {
     {
-        .name = "Hearts",
-        .color = (GLfloat[]){1.0f, 0.0f, 0.0f},
+        .name = SUIT_HEARTS,
+        .color = SUIT_COLOR_RED,
+        .rgb = (GLfloat[]){1.0f, 0.0f, 0.0f},
     },
     {
-        .name = "Diamonds",
-        .color = (GLfloat[]){1.0f, 0.0f, 0.0f},
+        .name = SUIT_DIAMONDS,
+        .color = SUIT_COLOR_RED,
+        .rgb = (GLfloat[]){1.0f, 0.0f, 0.0f},
     },
     {
-        .name = "Clubs",
-        .color = (GLfloat[]){0.0f, 0.0f, 0.0f},
+        .name = SUIT_CLUBS,
+        .color = SUIT_COLOR_BLACK,
+        .rgb = (GLfloat[]){0.0f, 0.0f, 0.0f},
     },
     {
-        .name = "Spades",
-        .color = (GLfloat[]){0.0f, 0.0f, 0.0f},
+        .name = SUIT_SPADES,
+        .color = SUIT_COLOR_BLACK,
+        .rgb = (GLfloat[]){0.0f, 0.0f, 0.0f},
     },
-};
-
-static char const Cards[] =
-{
-    '2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'A'
 };
 
 void deck_init(deck_t * deck)
@@ -33,9 +32,9 @@ void deck_init(deck_t * deck)
 
     for (int j = 0; j < countof(Suits); j++)
     {
-        for (int i = 0; i < countof(Cards); i++)
+        for (int i = 0; i < CARD_NUM; i++)
         {
-            card_init(&deck->card[index], &Suits[j], Cards[i]);
+            card_init(&deck->card[index], &Suits[j], i);
             cardset_push(&deck->set, &deck->card[index]);
             index++;
         }
