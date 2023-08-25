@@ -8,6 +8,7 @@ extern GLfloat Card_Size[2];
 
 typedef enum
 {
+    CARD_A,
     CARD_2,
     CARD_3,
     CARD_4,
@@ -20,7 +21,6 @@ typedef enum
     CARD_J,
     CARD_Q,
     CARD_K,
-    CARD_A,
     CARD_NUM,
 } card_name_t;
 

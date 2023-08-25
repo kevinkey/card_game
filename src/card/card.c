@@ -65,7 +65,7 @@ void card_draw(card_t * card)
     if (!card->facedown)
     {
         glColor3f(card->suit->rgb[0], card->suit->rgb[1], card->suit->rgb[2]);
-        glRasterPos2f(tl[0], br[1]);
+        glRasterPos2f(tl[0], tl[1] - 0.05);
         //glScalef(0.003,0.003,1);
         //glutStrokeString(GLUT_STROKE_MONO_ROMAN, (char[]){card->name, card->suit->name[0]});
 
@@ -77,7 +77,7 @@ char card_text(card_t * card)
 {
     static char const text[] =
     {
-        '2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'A'
+        'A', '2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K'
     };
 
     return text[card->name];

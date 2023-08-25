@@ -8,15 +8,17 @@ static void set_select(solitaire_t * solitaire, solitaire_set_t set, GLfloat x, 
     switch (set)
     {
         case SOLITAIRE_SET_DISCARD:
-            cardset_push(
-                &solitaire->set[SOLITAIRE_SET_SELECTED],
-                cardset_pop(&solitaire->set[set]));
-            break;
         case SOLITAIRE_SET_HOME_0:
         case SOLITAIRE_SET_HOME_1:
         case SOLITAIRE_SET_HOME_2:
         case SOLITAIRE_SET_HOME_3:
+            if (solitaire->set[set].count > 0)
+            {
+                cardset_push(
+                    &solitaire->set[SOLITAIRE_SET_SELECTED],
+                    cardset_pop(&solitaire->set[set]));
 
+            }
             break;
         case SOLITAIRE_SET_COL_0:
         case SOLITAIRE_SET_COL_1:
@@ -25,7 +27,15 @@ static void set_select(solitaire_t * solitaire, solitaire_set_t set, GLfloat x, 
         case SOLITAIRE_SET_COL_4:
         case SOLITAIRE_SET_COL_5:
         case SOLITAIRE_SET_COL_6:
+            if (!solitaire->set[set].set[index]->facedown)
+            {
+                card_t * card;
 
+                while ((card = cardset_remove(&solitaire->set[set], index)) != NULL)
+                {
+                    cardset_push(&solitaire->set[SOLITAIRE_SET_SELECTED], card);
+                }
+            }
             break;
     }
 }
@@ -60,7 +70,25 @@ static void set_release(solitaire_t * solitaire, solitaire_set_t set, GLfloat x,
         case SOLITAIRE_SET_HOME_1:
         case SOLITAIRE_SET_HOME_2:
         case SOLITAIRE_SET_HOME_3:
+            if (solitaire->set[SOLITAIRE_SET_SELECTED].count == 1)
+            {
+                card_t * head = solitaire->set[SOLITAIRE_SET_SELECTED].set[0];
+                bool move_card;
 
+                if (solitaire->set[set].count <= 0)
+                {
+                    move_card = (head->name == CARD_A);
+                }
+                else
+                {
+                    card_t * tail = solitaire->set[set].set[solitaire->set[set].count - 1u];
+                    move_card = (card_diff(tail, head) == -1) && (tail->suit->name == head->suit->name);
+                }
+
+                if (move_card) cardset_transfer(
+                    &solitaire->set[set],
+                    &solitaire->set[SOLITAIRE_SET_SELECTED]);
+            }
             break;
         case SOLITAIRE_SET_COL_0:
         case SOLITAIRE_SET_COL_1:
@@ -69,7 +97,30 @@ static void set_release(solitaire_t * solitaire, solitaire_set_t set, GLfloat x,
         case SOLITAIRE_SET_COL_4:
         case SOLITAIRE_SET_COL_5:
         case SOLITAIRE_SET_COL_6:
+            if (solitaire->set[SOLITAIRE_SET_SELECTED].count > 0)
+            {
+                bool move_cards;
 
+                if (solitaire->set[set].count <= 0)
+                {
+                    move_cards = (solitaire->set[SOLITAIRE_SET_SELECTED].set[0]->name == CARD_K);
+                }
+                else
+                {
+                    card_t * tail = solitaire->set[set].set[solitaire->set[set].count - 1u];
+                    card_t * head = solitaire->set[SOLITAIRE_SET_SELECTED].set[0];
+
+                    move_cards = (card_diff(tail, head) == 1) && (tail->suit->color != head->suit->color);
+                }
+
+                if (move_cards) cardset_transfer(
+                    &solitaire->set[set],
+                    &solitaire->set[SOLITAIRE_SET_SELECTED]);
+            }
+            else if ((solitaire->previous_set == set) && (solitaire->set[set].count > 0))
+            {
+                solitaire->set[set].set[solitaire->set[set].count - 1u]->facedown = false;
+            }
             break;
     }
 }
@@ -177,12 +228,9 @@ void solitaire_select(solitaire_t * solitaire, GLfloat x, GLfloat y, bool active
 
     if (!active)
     {
-        while (solitaire->set[SOLITAIRE_SET_SELECTED].count != 0)
-        {
-            cardset_push(
-                &solitaire->set[solitaire->previous_set],
-                cardset_remove(&solitaire->set[SOLITAIRE_SET_SELECTED], 0));
-        }
+        cardset_transfer(
+            &solitaire->set[solitaire->previous_set],
+            &solitaire->set[SOLITAIRE_SET_SELECTED]);
         glutPostRedisplay();
     }
 }

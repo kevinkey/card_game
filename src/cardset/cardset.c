@@ -160,3 +160,11 @@ bool cardset_within_bounds(cardset_t * cardset, GLfloat x, GLfloat y, int * inde
         return true;
     }
 }
+
+void cardset_transfer(cardset_t * dest, cardset_t * src)
+{
+    while (src->count != 0)
+    {
+        cardset_push(dest, cardset_remove(src, 0));
+    }
+}
