@@ -215,21 +215,34 @@ void solitaire_draw(solitaire_t * solitaire)
 
 void solitaire_select(solitaire_t * solitaire, GLfloat x, GLfloat y, bool active)
 {
+    GLfloat pos[2] = {x, y};
+
+    if (!active)
+    {
+        card_t * head = cardset_head(&solitaire->set[SOLITAIRE_SET_SELECTED]);
+
+        if (head != NULL)
+        {
+            pos[0] = head->pos[0] + (Card_Size[0] / 2.0f);
+            pos[1] = head->pos[1] - (Card_Size[1] / 2.0f);
+        }
+    }
+
     for (int i = 0; i < countof(solitaire->set); i++)
     {
         if (i == SOLITAIRE_SET_SELECTED) continue;
 
         int index;
 
-        if (cardset_within_bounds(&solitaire->set[i], x, y, &index))
+        if (cardset_within_bounds(&solitaire->set[i], pos[0], pos[1], &index))
         {
             if (active)
             {
-                set_select(solitaire, i, x, y, index);
+                set_select(solitaire, i, pos[0], pos[1], index);
             }
             else
             {
-                set_release(solitaire, i, x, y, index);
+                set_release(solitaire, i, pos[0], pos[1], index);
             }
 
             glutPostRedisplay();
