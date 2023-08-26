@@ -28,6 +28,7 @@ typedef struct
 {
     deck_t deck;
     cardset_t set[SOLITAIRE_SET_NUM];
+    GLfloat offset[2];
     solitaire_set_t previous_set;
 } solitaire_t;
 

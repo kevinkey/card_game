@@ -2,7 +2,6 @@
 
 static void set_select(solitaire_t * solitaire, solitaire_set_t set, GLfloat x, GLfloat y, int index)
 {
-    printf("SELECT: %d %d\n", set, index);
     solitaire->previous_set = set;
 
     switch (set)
@@ -17,7 +16,6 @@ static void set_select(solitaire_t * solitaire, solitaire_set_t set, GLfloat x, 
                 cardset_push(
                     &solitaire->set[SOLITAIRE_SET_SELECTED],
                     cardset_pop(&solitaire->set[set]));
-
             }
             break;
         case SOLITAIRE_SET_COL_0:
@@ -27,7 +25,7 @@ static void set_select(solitaire_t * solitaire, solitaire_set_t set, GLfloat x, 
         case SOLITAIRE_SET_COL_4:
         case SOLITAIRE_SET_COL_5:
         case SOLITAIRE_SET_COL_6:
-            if (!solitaire->set[set].set[index]->facedown)
+            if ((index < solitaire->set[set].count) && !solitaire->set[set].set[index]->facedown)
             {
                 card_t * card;
 
@@ -37,6 +35,20 @@ static void set_select(solitaire_t * solitaire, solitaire_set_t set, GLfloat x, 
                 }
             }
             break;
+    }
+
+    if (solitaire->set[SOLITAIRE_SET_SELECTED].count > 0)
+    {
+        memcpy(
+            solitaire->set[SOLITAIRE_SET_SELECTED].offset,
+            solitaire->set[set].offset,
+            sizeof(solitaire->set[set].offset));
+        memcpy(
+            solitaire->set[SOLITAIRE_SET_SELECTED].pos,
+            solitaire->set[SOLITAIRE_SET_SELECTED].set[0]->pos,
+            sizeof(solitaire->set[SOLITAIRE_SET_SELECTED].set[0]->pos));
+        solitaire->offset[0] = solitaire->set[SOLITAIRE_SET_SELECTED].set[0]->pos[0] - x;
+        solitaire->offset[1] = solitaire->set[SOLITAIRE_SET_SELECTED].set[0]->pos[1] - y;
     }
 }
 
@@ -239,8 +251,8 @@ void solitaire_motion(solitaire_t * solitaire, GLfloat x, GLfloat y)
 {
     if (solitaire->set[SOLITAIRE_SET_SELECTED].count != 0)
     {
-        solitaire->set[SOLITAIRE_SET_SELECTED].pos[0] = x;
-        solitaire->set[SOLITAIRE_SET_SELECTED].pos[1] = y;
+        solitaire->set[SOLITAIRE_SET_SELECTED].pos[0] = x + solitaire->offset[0];
+        solitaire->set[SOLITAIRE_SET_SELECTED].pos[1] = y + solitaire->offset[1];
 
         glutPostRedisplay();
     }
