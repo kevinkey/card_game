@@ -94,7 +94,6 @@ void cardset_draw(cardset_t * cardset)
     {
         for (int i = 0; i < cardset->count; i++)
         {
-            printf(" %c%c", card_text(cardset->set[i]), suit_text(cardset->set[i]->suit));
             cardset->set[i]->pos[0] = pos[0];
             cardset->set[i]->pos[1] = pos[1];
             card_draw(cardset->set[i]);
