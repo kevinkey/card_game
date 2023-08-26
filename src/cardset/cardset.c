@@ -64,6 +64,20 @@ card_t * cardset_pop(cardset_t * cardset)
     return cardset_remove(cardset, cardset->count - 1);
 }
 
+card_t * cardset_head(cardset_t * cardset)
+{
+    if (cardset->count == 0) return NULL;
+
+    return cardset->set[0];
+}
+
+card_t * cardset_tail(cardset_t * cardset)
+{
+    if (cardset->count == 0) return NULL;
+
+    return cardset->set[cardset->count - 1];
+}
+
 void cardset_shuffle(cardset_t * cardset)
 {
     if (cardset->count <= 1) return;

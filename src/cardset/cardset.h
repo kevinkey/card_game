@@ -18,6 +18,8 @@ void cardset_insert(cardset_t * cardset, card_t * card, int index);
 void cardset_push(cardset_t * cardset, card_t * card);
 card_t * cardset_remove(cardset_t * cardset, int index);
 card_t * cardset_pop(cardset_t * cardset);
+card_t * cardset_head(cardset_t * cardset);
+card_t * cardset_tail(cardset_t * cardset);
 void cardset_shuffle(cardset_t * cardset);
 void cardset_draw(cardset_t * cardset);
 bool cardset_within_bounds(cardset_t * cardset, GLfloat x, GLfloat y, int * index);

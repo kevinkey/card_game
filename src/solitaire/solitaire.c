@@ -1,5 +1,24 @@
 #include "solitaire.h"
 
+static bool move_home(cardset_t * home, card_t * card)
+{
+    if (card == NULL) return false;
+
+    card_t * tail = cardset_tail(home);
+    bool move_card;
+
+    if (tail == NULL)
+    {
+        move_card = (card->name == CARD_A);
+    }
+    else
+    {
+        move_card = (card_diff(tail, card) == -1) && (tail->suit->name == card->suit->name);
+    }
+
+    return move_card;
+}
+
 static void set_select(solitaire_t * solitaire, solitaire_set_t set, GLfloat x, GLfloat y, int index)
 {
     solitaire->previous_set = set;
@@ -11,12 +30,9 @@ static void set_select(solitaire_t * solitaire, solitaire_set_t set, GLfloat x, 
         case SOLITAIRE_SET_HOME_1:
         case SOLITAIRE_SET_HOME_2:
         case SOLITAIRE_SET_HOME_3:
-            if (solitaire->set[set].count > 0)
-            {
-                cardset_push(
-                    &solitaire->set[SOLITAIRE_SET_SELECTED],
-                    cardset_pop(&solitaire->set[set]));
-            }
+            cardset_push(
+                &solitaire->set[SOLITAIRE_SET_SELECTED],
+                cardset_pop(&solitaire->set[set]));
             break;
         case SOLITAIRE_SET_COL_0:
         case SOLITAIRE_SET_COL_1:
@@ -80,25 +96,10 @@ static void set_release(solitaire_t * solitaire, solitaire_set_t set, GLfloat x,
         case SOLITAIRE_SET_HOME_1:
         case SOLITAIRE_SET_HOME_2:
         case SOLITAIRE_SET_HOME_3:
-            if (solitaire->set[SOLITAIRE_SET_SELECTED].count == 1)
-            {
-                card_t * head = solitaire->set[SOLITAIRE_SET_SELECTED].set[0];
-                bool move_card;
-
-                if (solitaire->set[set].count <= 0)
-                {
-                    move_card = (head->name == CARD_A);
-                }
-                else
-                {
-                    card_t * tail = solitaire->set[set].set[solitaire->set[set].count - 1u];
-                    move_card = (card_diff(tail, head) == -1) && (tail->suit->name == head->suit->name);
-                }
-
-                if (move_card) cardset_transfer(
+            if (move_home(&solitaire->set[set], cardset_head(&solitaire->set[SOLITAIRE_SET_SELECTED])))
+                cardset_transfer(
                     &solitaire->set[set],
                     &solitaire->set[SOLITAIRE_SET_SELECTED]);
-            }
             break;
         case SOLITAIRE_SET_COL_0:
         case SOLITAIRE_SET_COL_1:
@@ -107,19 +108,20 @@ static void set_release(solitaire_t * solitaire, solitaire_set_t set, GLfloat x,
         case SOLITAIRE_SET_COL_4:
         case SOLITAIRE_SET_COL_5:
         case SOLITAIRE_SET_COL_6:
-            if (solitaire->set[SOLITAIRE_SET_SELECTED].count > 0)
+        {
+            card_t * head = cardset_head(&solitaire->set[SOLITAIRE_SET_SELECTED]);
+            card_t * tail = cardset_tail(&solitaire->set[set]);
+
+            if (head != NULL)
             {
                 bool move_cards;
 
-                if (solitaire->set[set].count <= 0)
+                if (tail == NULL)
                 {
-                    move_cards = (solitaire->set[SOLITAIRE_SET_SELECTED].set[0]->name == CARD_K);
+                    move_cards = (head->name == CARD_K);
                 }
                 else
                 {
-                    card_t * tail = solitaire->set[set].set[solitaire->set[set].count - 1u];
-                    card_t * head = solitaire->set[SOLITAIRE_SET_SELECTED].set[0];
-
                     move_cards = (card_diff(tail, head) == 1) && (tail->suit->color != head->suit->color);
                 }
 
@@ -127,11 +129,12 @@ static void set_release(solitaire_t * solitaire, solitaire_set_t set, GLfloat x,
                     &solitaire->set[set],
                     &solitaire->set[SOLITAIRE_SET_SELECTED]);
             }
-            else if ((solitaire->previous_set == set) && (solitaire->set[set].count > 0))
+            else if ((solitaire->previous_set == set) && (tail != NULL))
             {
-                solitaire->set[set].set[solitaire->set[set].count - 1u]->facedown = false;
+                tail->facedown = false;
             }
             break;
+        }
     }
 }
 
@@ -252,4 +255,52 @@ void solitaire_motion(solitaire_t * solitaire, GLfloat x, GLfloat y)
 
         glutPostRedisplay();
     }
+}
+
+void solitaire_auto_home(solitaire_t * solitaire)
+{
+    bool any_moved = false;
+    bool moved;
+
+    do
+    {
+        moved = false;
+
+        for (int set = 0; set < SOLITAIRE_SET_NUM; set++)
+        {
+            switch (set)
+            {
+                case SOLITAIRE_SET_DISCARD:
+                case SOLITAIRE_SET_COL_0:
+                case SOLITAIRE_SET_COL_1:
+                case SOLITAIRE_SET_COL_2:
+                case SOLITAIRE_SET_COL_3:
+                case SOLITAIRE_SET_COL_4:
+                case SOLITAIRE_SET_COL_5:
+                case SOLITAIRE_SET_COL_6:
+                {
+                    card_t * tail = cardset_tail(&solitaire->set[set]);
+
+                    if (tail != NULL)
+                    {
+                        if (!tail->facedown)
+                        {
+                            for (int home = SOLITAIRE_SET_HOME_0; home <= SOLITAIRE_SET_HOME_3; home++)
+                            {
+                                if (move_home(&solitaire->set[home], tail))
+                                {
+                                    moved = true;
+                                    any_moved = true;
+                                    cardset_push(&solitaire->set[home], cardset_pop(&solitaire->set[set]));
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    } while (moved);
+
+    if (any_moved) glutPostRedisplay();
 }
