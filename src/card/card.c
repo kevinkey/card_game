@@ -69,7 +69,7 @@ void card_draw(card_t * card)
         //glScalef(0.003,0.003,1);
         //glutStrokeString(GLUT_STROKE_MONO_ROMAN, (char[]){card->name, card->suit->name[0]});
 
-        glutBitmapString(GLUT_BITMAP_TIMES_ROMAN_24, (char[]){card_text(card), suit_text(card->suit)});
+        glutBitmapString(GLUT_BITMAP_HELVETICA_18, (char[]){card_text(card), suit_text(card->suit)});
     }
 }
 

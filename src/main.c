@@ -33,6 +33,12 @@ static void MotionFunc(int x, int y)
     solitaire_motion(&Solitaire, fx, fy);
 }
 
+static void TimerFunc(int value)
+{
+    glutPostRedisplay();
+    glutTimerFunc(1000u, TimerFunc, 0);
+}
+
 int main(int argc, char ** argv)
 {
     srand(time(NULL));
@@ -47,6 +53,7 @@ int main(int argc, char ** argv)
     glutDisplayFunc(RenderSceneCB);
     glutMouseFunc(MouseFunc);
     glutMotionFunc(MotionFunc);
+    glutTimerFunc(1000u, TimerFunc, 0);
     glClearColor(0.0f, 0.5f, 0.0f, 0.0f);
 
     glutMainLoop();

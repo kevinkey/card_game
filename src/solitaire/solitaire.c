@@ -203,10 +203,33 @@ void solitaire_init(solitaire_t * solitaire)
     solitaire->set[SOLITAIRE_SET_HOME_3].pos[1] = 0.95f;
 
     solitaire->set[SOLITAIRE_SET_SELECTED].hide_empty = true;
+
+    time(&solitaire->start_time);
 }
 
 void solitaire_draw(solitaire_t * solitaire)
 {
+    glColor3f(0.0f, 0.4f, 0.0f);
+    glRectf(-1.0f, -0.9f, 1.0f, -1.0f);
+
+    time_t now;
+
+    time(&now);
+
+    int elapsed = (int)difftime(now, solitaire->start_time);
+    char seconds[16];
+    int length = snprintf(seconds, sizeof(seconds), "%d", elapsed);
+
+    glColor3f(0.0f, 0.2f, 0.0f);
+    glRasterPos2f(0.005f, -0.975f);
+    glutBitmapString(GLUT_BITMAP_HELVETICA_18, seconds);
+
+    glColor3f(1.0f, 1.0f, 1.0f);
+    glRasterPos2f(0.0f, -0.97f);
+    glutBitmapString(GLUT_BITMAP_HELVETICA_18, seconds);
+
+
+
     for (int i = 0; i < countof(solitaire->set); i++)
     {
         cardset_draw(&solitaire->set[i]);

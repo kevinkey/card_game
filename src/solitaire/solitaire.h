@@ -30,6 +30,7 @@ typedef struct
     cardset_t set[SOLITAIRE_SET_NUM];
     GLfloat offset[2];
     solitaire_set_t previous_set;
+    time_t start_time;
 } solitaire_t;
 
 void solitaire_init(solitaire_t * solitaire);
