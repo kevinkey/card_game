@@ -56,8 +56,6 @@ static void set_release(solitaire_t * solitaire, solitaire_set_t set, GLfloat x,
 {
     card_t * card;
 
-    printf("RELEASE: %d %d\n", set, index);
-
     switch (set)
     {
         case SOLITAIRE_SET_DECK:
@@ -208,9 +206,7 @@ void solitaire_draw(solitaire_t * solitaire)
 {
     for (int i = 0; i < countof(solitaire->set); i++)
     {
-        printf("SET: %d COUNT: %ld CARDS:", i, solitaire->set[i].count);
         cardset_draw(&solitaire->set[i]);
-        printf("\n");
     }
 }
 
