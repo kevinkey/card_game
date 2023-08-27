@@ -177,7 +177,7 @@ void solitaire_init(solitaire_t * solitaire)
     Card_Size[0] = (2.0f - (8.0f * 0.02f)) / 7.0f;
     Card_Size[1] = Card_Size[0] * 1.8f;
 
-    GLfloat x = -0.99f;
+    GLfloat x = -0.98f;
 
     for (int i = SOLITAIRE_SET_COL_0; i <= SOLITAIRE_SET_COL_6; i++)
     {
