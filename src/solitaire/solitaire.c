@@ -184,7 +184,7 @@ void solitaire_init(solitaire_t * solitaire)
         solitaire->set[i].pos[0] = x;
         x += 0.02f + Card_Size[0];
 
-        solitaire->set[i].pos[1] = Card_Size[1] - 0.1f;
+        solitaire->set[i].pos[1] = Card_Size[1] - 0.05f;
         solitaire->set[i].offset[1] = -0.1f;
     }
 
@@ -228,11 +228,30 @@ void solitaire_draw(solitaire_t * solitaire)
     glRasterPos2f(0.0f, -0.97f);
     glutBitmapString(GLUT_BITMAP_HELVETICA_18, seconds);
 
-
-
-    for (int i = 0; i < countof(solitaire->set); i++)
+    for (int set = 0; set < countof(solitaire->set); set++)
     {
-        cardset_draw(&solitaire->set[i]);
+        switch(set)
+        {
+            case SOLITAIRE_SET_COL_0:
+            case SOLITAIRE_SET_COL_1:
+            case SOLITAIRE_SET_COL_2:
+            case SOLITAIRE_SET_COL_3:
+            case SOLITAIRE_SET_COL_4:
+            case SOLITAIRE_SET_COL_5:
+            case SOLITAIRE_SET_COL_6:
+            {
+                GLfloat offset;
+
+                offset = (2.0f - (2.0f * Card_Size[1]) - 0.2f)
+                    / ((GLfloat)max(solitaire->set[set].count, 1));
+                offset = max(-0.1f, -offset);
+
+                solitaire->set[set].offset[1] = offset;
+                break;
+            }
+        }
+
+        cardset_draw(&solitaire->set[set]);
     }
 }
 

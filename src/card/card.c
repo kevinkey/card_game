@@ -1,5 +1,5 @@
 #include "card.h"
-#include <stdio.h>
+#include <ft2build.h>
 
 GLfloat Card_Size[2];
 
@@ -66,10 +66,16 @@ void card_draw(card_t * card)
     {
         glColor3f(card->suit->rgb[0], card->suit->rgb[1], card->suit->rgb[2]);
         glRasterPos2f(tl[0], tl[1] - 0.05);
-        //glScalef(0.003,0.003,1);
-        //glutStrokeString(GLUT_STROKE_MONO_ROMAN, (char[]){card->name, card->suit->name[0]});
 
-        glutBitmapString(GLUT_BITMAP_HELVETICA_18, (char[]){card_text(card), suit_text(card->suit)});
+        glPushMatrix();
+        glTranslatef(tl[0] + 0.01f, tl[1] - 0.05f, 0.0f);
+        glScalef(0.0003f, 0.0003f, 0.0003f);
+        glLineWidth(2.0f);
+        glutStrokeString(GLUT_STROKE_ROMAN, (char[]){card_text(card), suit_text(card->suit)});
+        glLineWidth(1.0f);
+	    glPopMatrix();
+
+        //glutBitmapString(GLUT_BITMAP_HELVETICA_18, (char[]){card_text(card), suit_text(card->suit)});
     }
 }
 

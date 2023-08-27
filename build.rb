@@ -11,8 +11,11 @@ env = {
 }
 
 stdout, stderr, status = Open3.capture3("pkg-config --libs glew")
-
 env[:LDFLAGS] += stdout.split(" ")
+
+stdout, stderr, status = Open3.capture3("pkg-config --libs freetype2")
+env[:LDFLAGS] += stdout.split(" ")
+
 env[:LDFLAGS] << "-lglut"
 
 env[:CPPPATH] = [
@@ -23,6 +26,9 @@ env[:CPPPATH] = [
     "src/solitaire",
     "src/suit"
 ]
+
+stdout, stderr, status = Open3.capture3("pkg-config --cflags freetype2")
+env[:CPPPATH] += stdout.gsub("-I", "").split(" ")
 
 env[:SRC] = [
     "src/main.c",

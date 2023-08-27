@@ -1,6 +1,7 @@
 #include "type.h"
 #include "solitaire.h"
 
+FT_Library FT;
 solitaire_t Solitaire;
 
 static void RenderSceneCB(void)
@@ -42,6 +43,11 @@ static void TimerFunc(int value)
 int main(int argc, char ** argv)
 {
     srand(time(NULL));
+
+    if (FT_Init_FreeType(&FT))
+    {
+        printf("Failed to load freetype\n");
+    }
 
     solitaire_init(&Solitaire);
 
