@@ -35,7 +35,7 @@ typedef struct
 void card_init(card_t * card, suit_t * suit, card_name_t name);
 bool card_within_bounds(card_t * card, GLfloat x, GLfloat y);
 void card_draw(card_t * card);
-char card_text(card_t * card);
+char * card_text(card_t * card);
 int card_diff(card_t * card_a, card_t * card_b);
 
 #endif

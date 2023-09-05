@@ -1,5 +1,4 @@
 #include "card.h"
-#include <ft2build.h>
 
 GLfloat Card_Size[2];
 
@@ -71,19 +70,18 @@ void card_draw(card_t * card)
         glTranslatef(tl[0] + 0.01f, tl[1] - 0.05f, 0.0f);
         glScalef(0.0003f, 0.0003f, 0.0003f);
         glLineWidth(2.0f);
-        glutStrokeString(GLUT_STROKE_ROMAN, (char[]){card_text(card), suit_text(card->suit)});
+        glutStrokeString(GLUT_STROKE_ROMAN, card_text(card));
+        glutStrokeString(GLUT_STROKE_ROMAN, (char[]){suit_text(card->suit)});
         glLineWidth(1.0f);
 	    glPopMatrix();
-
-        //glutBitmapString(GLUT_BITMAP_HELVETICA_18, (char[]){card_text(card), suit_text(card->suit)});
     }
 }
 
-char card_text(card_t * card)
+char * card_text(card_t * card)
 {
-    static char const text[] =
+    static char * text[] =
     {
-        'A', '2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K'
+        "A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"
     };
 
     return text[card->name];

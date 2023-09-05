@@ -31,6 +31,7 @@ typedef struct
     GLfloat offset[2];
     solitaire_set_t previous_set;
     time_t start_time;
+    bool new_game;
 } solitaire_t;
 
 void solitaire_init(solitaire_t * solitaire);

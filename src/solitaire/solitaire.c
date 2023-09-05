@@ -1,5 +1,38 @@
 #include "solitaire.h"
 
+static GLfloat NG_Pos[2][2] =
+{
+    {-1.0f, -0.92f},
+    {-0.8f, -1.0f},
+};
+
+static void draw_text(GLfloat x, GLfloat y, char * string)
+{
+    //glColor3f(0.0f, 0.2f, 0.0f);
+    //glRasterPos2f(x + 0.005f, y - 0.005f);
+    //glutBitmapString(GLUT_BITMAP_HELVETICA_18, string);
+//
+    //glColor3f(1.0f, 1.0f, 1.0f);
+    //glRasterPos2f(x, y);
+    //glutBitmapString(GLUT_BITMAP_HELVETICA_18, string);
+
+    glColor3f(0.0f, 0.2f, 0.0f);
+    glPushMatrix();
+    glTranslatef(x + 0.003f, y - 0.003f, 0.0f);
+    glScalef(0.0002f, 0.0002f, 0.0f);
+    glLineWidth(1.0f);
+    glutStrokeString(GLUT_STROKE_ROMAN, string);
+    glPopMatrix();
+
+    glColor3f(1.0f, 1.0f, 1.0f);
+    glPushMatrix();
+    glTranslatef(x, y, 0.0f);
+    glScalef(0.0002f, 0.0002f, 0.0f);
+    glLineWidth(1.0f);
+    glutStrokeString(GLUT_STROKE_ROMAN, string);
+    glPopMatrix();
+}
+
 static bool move_home(cardset_t * home, card_t * card)
 {
     if (card == NULL) return false;
@@ -138,10 +171,8 @@ static void set_release(solitaire_t * solitaire, solitaire_set_t set, GLfloat x,
     }
 }
 
-void solitaire_init(solitaire_t * solitaire)
+static void new_game(solitaire_t * solitaire)
 {
-    deck_init(&solitaire->deck);
-
     for (int i = 0; i < countof(solitaire->set); i++)
     {
         cardset_init(&solitaire->set[i]);
@@ -207,10 +238,29 @@ void solitaire_init(solitaire_t * solitaire)
     time(&solitaire->start_time);
 }
 
+void solitaire_init(solitaire_t * solitaire)
+{
+    deck_init(&solitaire->deck);
+    new_game(solitaire);
+}
+
 void solitaire_draw(solitaire_t * solitaire)
 {
     glColor3f(0.0f, 0.4f, 0.0f);
-    glRectf(-1.0f, -0.9f, 1.0f, -1.0f);
+    glRectf(-1.0f, -0.92f, 1.0f, -1.0f);
+
+    if (solitaire->new_game)
+    {
+        glColor3f(0.1f, 0.5f, 0.1f);
+        glBegin(GL_QUADS);
+        {
+            glVertex2f(NG_Pos[0][0], NG_Pos[0][1]);
+            glVertex2f(NG_Pos[1][0], NG_Pos[0][1]);
+            glVertex2f(NG_Pos[1][0], NG_Pos[1][1]);
+            glVertex2f(NG_Pos[0][0], NG_Pos[1][1]);
+        }
+        glEnd();
+    }
 
     time_t now;
 
@@ -220,13 +270,8 @@ void solitaire_draw(solitaire_t * solitaire)
     char seconds[16];
     int length = snprintf(seconds, sizeof(seconds), "%d", elapsed);
 
-    glColor3f(0.0f, 0.2f, 0.0f);
-    glRasterPos2f(0.005f, -0.975f);
-    glutBitmapString(GLUT_BITMAP_HELVETICA_18, seconds);
-
-    glColor3f(1.0f, 1.0f, 1.0f);
-    glRasterPos2f(0.0f, -0.97f);
-    glutBitmapString(GLUT_BITMAP_HELVETICA_18, seconds);
+    draw_text(0.0f, -0.97f, seconds);
+    draw_text(-0.97f, -0.97f, "NEW GAME");
 
     for (int set = 0; set < countof(solitaire->set); set++)
     {
@@ -258,6 +303,24 @@ void solitaire_draw(solitaire_t * solitaire)
 void solitaire_select(solitaire_t * solitaire, GLfloat x, GLfloat y, bool active)
 {
     GLfloat pos[2] = {x, y};
+
+    bool is_new
+        = ((x >= NG_Pos[0][0]) && (x <= NG_Pos[1][0])
+        && (y <= NG_Pos[0][1]) && (y >= NG_Pos[1][1]));
+
+    if (active)
+    {
+        solitaire->new_game = is_new;
+        if (is_new) glutPostRedisplay();
+    }
+    else
+    {
+        if (is_new && solitaire->new_game)
+        {
+            new_game(solitaire);
+        }
+        solitaire->new_game = false;
+    }
 
     if (!active)
     {
